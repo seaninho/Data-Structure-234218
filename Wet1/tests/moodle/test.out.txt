@@ -1,0 +1,17 @@
+init done.
+addPlayer: SUCCESS
+addPlayer: FAILURE
+addPlayer: SUCCESS
+addClan: SUCCESS
+joinClan: SUCCESS
+completeChallange: SUCCESS
+getBestPlayer: FAILURE
+Most successful player is: 1
+joinClan: SUCCESS
+completeChallange: SUCCESS
+Most successful player is: 1
+Rank	||	Player
+1		||	2
+2		||	1
+and there are no more players!
+Quit done.

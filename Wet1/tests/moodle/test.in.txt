@@ -1,0 +1,14 @@
+init
+addPlayer 1 0
+addPlayer 1 2
+addPlayer 2 1
+addClan 1
+joinClan 1 1
+completeChallange 1 5
+getBestPlayer 2
+getBestPlayer 1
+joinClan 2 1
+completeChallange 2 5
+getBestPlayer 1
+getScoreboard 1
+Quit
