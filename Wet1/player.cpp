@@ -17,7 +17,7 @@ bool Player::getCompletedChallenge() {
 }
 
 void Player::setCompletedChallenge() {
-	completedChaleange = true;
+	completedChallenge = true;
 }
 
 void Player::setClan(AVLnode<int, Clan>* node) {
