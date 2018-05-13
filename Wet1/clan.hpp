@@ -13,7 +13,11 @@ class Clan{
 	AVLtree<Pair,Player>* clanTree;
 
 public:
-
+    /* Description:   Constructs the clan.
+     * Input:         ID - a unique integer.
+     * Output:        None.
+     * Return Values: Clan object.
+    */
 	Clan(int ID) : clanID(ID), bestPlayer(Player()), numOfPlayers(EMPTY) {
 		clanTree = new AVLtree<Pair,Player>();
 	}
@@ -22,70 +26,70 @@ public:
 //		clanTree = NULL;
 //	}
 
+    /* Description:   Destructs the clan.
+     * Input:         None.
+     * Output:        None.
+     * Return Values: None.
+    */
 	~Clan()	{
 		clanTree->cleanTreeData(clanTree->root);
 		delete clanTree;
 	}
+    /* Description:  Gets the clan's ID.
+    * Input:         None.
+    * Output:        None.
+    * Return Values: The clan's ID.
+    */
+	int getClanID();
 
-	int getClanID() {
-		return clanID;
-	}
+	/* Description:  Adds a player to the clan.
+    * Input:         player - the player's data.
+    * Output:        None.
+    * Return Values: None.
+    */
+	void addPlayerToClan(Player* player);
 
-	void addPlayerToClan(Player* player) {
-		Pair* key = new Pair(player->getPlayerID(), player->getNumOfCoins());
-		clanTree->insertKey(key, player);
-		int num_of_coins = player->getNumOfCoins();
-		int playerID = player->getPlayerID();
-		if (num_of_coins > bestPlayer.getNumOfCoins() ||
-				(num_of_coins == bestPlayer.getNumOfCoins() && playerID < bestPlayer.getPlayerID())) {
-			bestPlayer = *player;
-		}
-		numOfPlayers++;
-	}
+    /* Description:  Removes a player from the clan.
+    * Input:         player - the player's data.
+    * Output:        None.
+    * Return Values: None.
+    */
+	void removeStudentFromClan(Player player);
 
-	void removeStudentFromClan(Player player) {
-		Pair key = Pair(player.getPlayerID(), player.getNumOfCoins());
-		clanTree->removeKey(key,false);
-		if (bestPlayer.getPlayerID() == player.getPlayerID())	{
-			if (clanTree->root != NULL)	{
-				bestPlayer = *clanTree->findMaxKey()->data;
-			} else	{
-				bestPlayer = Player();
-			}
-		}
-		numOfPlayers--;
-	}
+    /* Description:  Gets the number of players in the clan.
+    * Input:         None.
+    * Output:        None.
+    * Return Values: The number of players in the clan.
+    */
+	int getNumOfPlayers();
 
+    /* Description:  Gets the best player in the clan, the player who has the most coins.
+    * Input:         None.
+    * Output:        None.
+    * Return Values: The player's data.
+    */
+	Player getBestPlayer ();
 
-	int getNumOfPlayers()	{
-		return numOfPlayers;
-	}
+    /* Description:  Sets the best player in the clan, the player who has the most coins.
+    * Input:         None.
+    * Output:        None.
+    * Return Values: None.
+    */
+	void setBestPlayer ();
 
-	Player getBestPlayer ()	{
-		if (numOfPlayers == 0) {
-			bestPlayer = Player();
-		}
-		return bestPlayer;
-	}
+    /* Description:  Gets the clan's players tree.
+    * Input:         None.
+    * Output:        None.
+    * Return Values: The clan's players tree root node.
+    */
+	AVLtree<Pair,Player>* getClanTree();
 
-	void setBestPlayer ()	{
-		bestPlayer = *clanTree->findMaxKey()->data;
-	}
-
-	AVLnode<Pair,Player>* getClanTreeRoot ()	{
-		return clanTree->root;
-	}
-
-	AVLtree<Pair,Player>* getClanTree()	{
-		return clanTree;
-	}
-
-
-	void clanTreeRevPrint(AVLnode<Pair,Player>** nodes)	{
-		int i = 0;
-		clanTree->revinorderPrint(clanTree->root, nodes, &i);
-	}
-
+    /* Description:  Prints the clan's players tree.
+    * Input:         None.
+    * Output:        None.
+    * Return Values: None.
+    */
+	void clanTreeRevPrint(AVLnode<Pair,Player>** nodes);
 
 };
 
