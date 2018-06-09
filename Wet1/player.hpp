@@ -7,13 +7,13 @@
 #define INVALID -1
 #define EMPTY 0
 
-//class Clan;
+class Clan;
 class Player {
 
 	int playerID;
 	int num_of_coins;
-	bool completedChallenge;
-	AVLnode<int, Clan>* clanTree;
+	int completedChallenges;
+	Clan* clan;
 
 public:
     /* Description:   Constructs the player.
@@ -21,14 +21,14 @@ public:
      * Output:        None.
      * Return Values: Player object.
     */
-	Player(int ID, int initialCoins) : playerID(ID), num_of_coins(initialCoins), completedChallenge(false), clanTree(NULL) {}
+	Player(int ID, int initialCoins) : playerID(ID), num_of_coins(initialCoins), completedChallenges(0), clan(NULL) {}
 
     /* Description:   Constructs the player - default constructor.
      * Input:         None.
      * Output:        None.
      * Return Values: Player object.
     */
-	Player() : playerID(INVALID), num_of_coins(EMPTY), completedChallenge(false), clanTree(NULL) {}
+	Player() : playerID(INVALID), num_of_coins(EMPTY), completedChallenges(0), clan(NULL) {}
 
     /* Description:   Destruction of the player.
      * Input:         None.
@@ -36,7 +36,7 @@ public:
      * Return Values: None.
     */
 	~Player() {
-		clanTree = NULL;
+		clan = NULL;
 	}
 
     /* Description:   Adds coins to the player's tally.
@@ -60,33 +60,33 @@ public:
     */
 	int getNumOfCoins();
 
-    /* Description:  Indicates whether the player has successfully completed a challenge.
+    /* Description:  Gets the number of challenges the player has.
     * Input:         None.
     * Output:        None.
-    * Return Values: true - the completed a challenge successfully. false - otherwise.
+    * Return Values: The number of challenges.
     */
-	bool getCompletedChallenge();
+	int getCompletedChallenges();
 
-    /* Description:  Marks the player has completed a challenge successfully.
+    /* Description:  Increases the number of completed challenges by 1.
     * Input:         None.
     * Output:        None.
     * Return Values: None.
     */
-	void setCompletedChallenge();
+	void completeChallenge();
 
     /* Description:  Adds the player to a specific clan.
-    * Input:         node - the clan's players tree root.
+    * Input:         clan - the clan itself.
     * Output:        None.
     * Return Values: None.
     */
-	void setClan(AVLnode<int, Clan>* node);
+	void setClan(Clan* clan);
 
-    /* Description:  Gets the player's clan tree.
+    /* Description:  Gets the player's clan.
     * Input:         None.
     * Output:        None.
-    * Return Values: The  player's clan tree.
+    * Return Values: A pointer to the player's clan tree.
     */
-	AVLnode<int, Clan>* getClanTree();
+	Clan* getClan();
 
 };
 

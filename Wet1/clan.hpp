@@ -10,7 +10,7 @@ class Clan{
 	int clanID;
 	Player bestPlayer;
 	int numOfPlayers;
-	AVLtree<Pair,Player>* clanTree;
+	AVLtree<Pair,Player>* playerTree;
 
 public:
     /* Description:   Constructs the clan.
@@ -19,7 +19,7 @@ public:
      * Return Values: Clan object.
     */
 	Clan(int ID) : clanID(ID), bestPlayer(Player()), numOfPlayers(EMPTY) {
-		clanTree = new AVLtree<Pair,Player>();
+		playerTree = new AVLtree<Pair,Player>();
 	}
 
 //	Clan() : clanID(-1), bestPlayer(Player()), numOfPlayers(-1) {
@@ -32,8 +32,8 @@ public:
      * Return Values: None.
     */
 	~Clan()	{
-		clanTree->cleanTreeData(clanTree->root);
-		delete clanTree;
+		playerTree->cleanTreeData(playerTree->root);
+		delete playerTree;
 	}
     /* Description:  Gets the clan's ID.
     * Input:         None.
@@ -63,6 +63,13 @@ public:
     */
 	int getNumOfPlayers();
 
+    /* Description:  Sets the number of players in the clan.
+    * Input:         num - the amount of players.
+    * Output:        None.
+    * Return Values: None.
+    */
+	void setNumOfPlayers(int num);
+
     /* Description:  Gets the best player in the clan, the player who has the most coins.
     * Input:         None.
     * Output:        None.
@@ -71,11 +78,11 @@ public:
 	Player getBestPlayer ();
 
     /* Description:  Sets the best player in the clan, the player who has the most coins.
-    * Input:         None.
+    * Input:         player - a player for comparison with bestPlayer.
     * Output:        None.
     * Return Values: None.
     */
-	void setBestPlayer ();
+	void setBestPlayer (Player* player);
 
     /* Description:  Gets the clan's players tree.
     * Input:         None.

@@ -12,18 +12,18 @@ int Player::getNumOfCoins() {
 	return this->num_of_coins;
 }
 
-bool Player::getCompletedChallenge() {
-	return completedChallenge;
+int Player::getCompletedChallenges() {
+	return this->completedChallenges;
 }
 
-void Player::setCompletedChallenge() {
-	completedChallenge = true;
+void Player::completeChallenge() {
+	completedChallenges++;
 }
 
-void Player::setClan(AVLnode<int, Clan>* node) {
-	clanTree = node;
+void Player::setClan(Clan* clan) {
+	this->clan = clan;
 }
 
-AVLnode<int, Clan>* Player::getClanTree() {
-	return clanTree;
+Clan* Player::getClan() {
+	return this->clan;
 }

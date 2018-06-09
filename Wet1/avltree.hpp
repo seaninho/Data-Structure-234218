@@ -3,13 +3,14 @@
 
 #include <iostream>
 #include <algorithm>
+#include <math.h>
 
 const int DEF_BALANCE = 0;
 const int POS_BALANCE = 2;
 const int NEG_BALANCE = -2;
 
 /*  AVL node  */
-template <class T, class S>
+template<class T, class S>
 class AVLnode {
 public:
 	T* key;
@@ -17,8 +18,11 @@ public:
 	int height;
 	AVLnode *left, *right, *parent;
 
-	AVLnode(T* k, S* d, AVLnode* p) : key(k), data(d),height(0),
-			left(NULL), right(NULL), parent(p) {}
+	int getSize();
+
+	AVLnode(T* k, S* d, AVLnode* p) :
+			key(k), data(d), height(0), left(NULL), right(NULL), parent(p) {
+	}
 
 	~AVLnode() {
 		left = NULL;
@@ -28,8 +32,15 @@ public:
 
 };
 
+template<class T, class S>
+int AVLnode<T, S>::getSize() {
+	int leftSize = this->left ? left->getSize() : 0;
+	int rightSize = this->right ? right->getSize() : 0;
+	return leftSize + rightSize + 1;
+}
+
 /*  AVL tree  */
-template <class T, class S>
+template<class T, class S>
 class AVLtree {
 private:
 	void avlRotateRR(AVLnode<T, S>* node);
@@ -42,18 +53,19 @@ private:
 	void adjustHeight(AVLnode<T, S>* start);
 	void rebalance(AVLnode<T, S>* node);
 
-
 public:
 	AVLnode<T, S>* root;
 
-	AVLtree() : root(NULL) {}
+	AVLtree() :
+			root(NULL) {
+	}
 	~AVLtree() {
 		clearTree(root);
 	}
 
 	void insertKey(T* key, S* data);
 	void removeKey(const T key, bool delete_data = true);
-	bool findKey (const T key);
+	bool findKey(const T key);
 
 	S* getData(const T key);
 	AVLnode<T, S>* getNodeByKey(const T key);
@@ -68,11 +80,17 @@ public:
 	void revinorderPrint(AVLnode<T, S>* node, AVLnode<T, S>** nodes, int* i);
 	void treePrint(AVLnode<T, S>* node, int level);
 
+	AVLnode<T, S>* createEmptyTree(int numOfObjects);
+	AVLnode<T, S>* createEmptyTreeHelper(int numOfObjects, int height,
+			AVLnode<T, S> *parent);
+	void removeExtraNodes(int *amount, AVLnode<T, S> *node);
+	void createAvlFromArray(int numOfObjects, AVLnode<T, S>** array);
+
 	void cleanTreeData(AVLnode<T, S>* node);
 	void clearTree(AVLnode<T, S>* node);
 };
 
-template <class T, class S>
+template<class T, class S>
 void AVLtree<T, S>::avlRotateRR(AVLnode<T, S>* node) {
 	AVLnode<T, S>* temp = node->right;
 	node->right = temp->left;
@@ -81,8 +99,7 @@ void AVLtree<T, S>::avlRotateRR(AVLnode<T, S>* node) {
 	if (node->parent == NULL) {
 		root = temp;
 		temp->parent = NULL;
-	}
-	else if (node->parent->left == node)
+	} else if (node->parent->left == node)
 		node->parent->left = temp;
 	else
 		node->parent->right = temp;
@@ -94,7 +111,7 @@ void AVLtree<T, S>::avlRotateRR(AVLnode<T, S>* node) {
 	adjustHeight(temp);
 }
 
-template <class T, class S>
+template<class T, class S>
 void AVLtree<T, S>::avlRotateLL(AVLnode<T, S>* node) {
 	AVLnode<T, S>* temp = node->left;
 	node->left = temp->right;
@@ -103,8 +120,7 @@ void AVLtree<T, S>::avlRotateLL(AVLnode<T, S>* node) {
 	if (node->parent == NULL) {
 		root = temp;
 		temp->parent = NULL;
-	}
-	else if (node->parent->left == node)
+	} else if (node->parent->left == node)
 		node->parent->left = temp;
 	else
 		node->parent->right = temp;
@@ -116,27 +132,27 @@ void AVLtree<T, S>::avlRotateLL(AVLnode<T, S>* node) {
 	adjustHeight(temp);
 }
 
-template <class T, class S>
+template<class T, class S>
 void AVLtree<T, S>::avlRotateLR(AVLnode<T, S>* node) {
 	avlRotateRR(node->left);
 
 	return avlRotateLL(node);
 }
 
-template <class T, class S>
+template<class T, class S>
 void AVLtree<T, S>::avlRotateRL(AVLnode<T, S>* node) {
 	avlRotateLL(node->right);
 	return avlRotateRR(node);
 }
 
-template <class T, class S>
+template<class T, class S>
 int AVLtree<T, S>::getHeight(AVLnode<T, S>* node) {
 	if (node == NULL)
 		return -1;
 	return (1 + std::max(getHeight(node->left), getHeight(node->right)));
 }
 
-template <class T, class S>
+template<class T, class S>
 int AVLtree<T, S>::getBF(AVLnode<T, S>* node) {
 	if (node == NULL)
 		return DEF_BALANCE;
@@ -144,14 +160,14 @@ int AVLtree<T, S>::getBF(AVLnode<T, S>* node) {
 		return getHeight(node->left) - getHeight(node->right);
 }
 
-template <class T, class S>
+template<class T, class S>
 void AVLtree<T, S>::adjustHeight(AVLnode<T, S>* node) {
 	if (node == NULL)
 		return;
 	node->height = getHeight(node);
 }
 
-template <class T, class S>
+template<class T, class S>
 void AVLtree<T, S>::rebalance(AVLnode<T, S>* node) {
 	while (node != NULL) {
 		adjustHeight(node);
@@ -160,8 +176,7 @@ void AVLtree<T, S>::rebalance(AVLnode<T, S>* node) {
 				avlRotateLL(node);
 			else
 				avlRotateLR(node);
-		}
-		else if(getBF(node) == NEG_BALANCE) {
+		} else if (getBF(node) == NEG_BALANCE) {
 			if (getBF(node->right) <= DEF_BALANCE)
 				avlRotateRR(node);
 			else
@@ -171,13 +186,12 @@ void AVLtree<T, S>::rebalance(AVLnode<T, S>* node) {
 	}
 }
 
-template <class T, class S>
+template<class T, class S>
 void AVLtree<T, S>::insertKey(T* key, S* data) {
 	if (root == NULL) {
 		root = new AVLnode<T, S>(key, data, NULL);
 		return;
-	}
-	else if (!findKey(*key)) {
+	} else if (!findKey(*key)) {
 		AVLnode<T, S>* node = root;
 		AVLnode<T, S>* parent = NULL;
 		while (node != NULL) {
@@ -196,7 +210,7 @@ void AVLtree<T, S>::insertKey(T* key, S* data) {
 	}
 }
 
-template <class T, class S>
+template<class T, class S>
 void AVLtree<T, S>::removeKey(const T key, bool delete_data) {
 	if (root == NULL)
 		return;
@@ -213,24 +227,20 @@ void AVLtree<T, S>::removeKey(const T key, bool delete_data) {
 					parent->right = NULL;
 				else
 					parent->left = NULL;
-			}
-			else
+			} else
 				root = NULL;
 			bal_node = parent;
 			delete node;
-		}
-		else if ((node->left == NULL) && (node->right != NULL)) {
+		} else if ((node->left == NULL) && (node->right != NULL)) {
 			if (parent) {
 				if (parent->right == node) {
 					parent->right->key = node->right->key;
 					parent->right->data = node->right->data;
-				}
-				else {
+				} else {
 					parent->left->key = node->right->key;
 					parent->left->data = node->right->data;
 				}
-			}
-			else {
+			} else {
 				root->key = node->right->key;
 				root->data = node->right->data;
 			}
@@ -238,19 +248,16 @@ void AVLtree<T, S>::removeKey(const T key, bool delete_data) {
 			node->right->parent = parent;
 			delete node->right;
 			node->right = NULL;
-		}
-		else if ((node->left != NULL) && (node->right == NULL)) {
+		} else if ((node->left != NULL) && (node->right == NULL)) {
 			if (parent) {
-				if (parent->right == node){
+				if (parent->right == node) {
 					parent->right->key = node->left->key;
 					parent->right->data = node->left->data;
-				}
-				else{
+				} else {
 					parent->left->key = node->left->key;
 					parent->left->data = node->left->data;
 				}
-			}
-			else{
+			} else {
 				root->key = node->left->key;
 				root->data = node->left->data;
 			}
@@ -258,8 +265,7 @@ void AVLtree<T, S>::removeKey(const T key, bool delete_data) {
 			node->left->parent = parent;
 			delete node->left;
 			node->left = NULL;
-		}
-		else {
+		} else {
 			AVLnode<T, S>* next = node->right;
 			while (next->left != NULL)
 				next = next->left;
@@ -267,13 +273,11 @@ void AVLtree<T, S>::removeKey(const T key, bool delete_data) {
 				if (parent->right == node) {
 					parent->right->key = next->key;
 					parent->right->data = next->data;
-				}
-				else {
+				} else {
 					parent->left->key = next->key;
 					parent->left->data = next->data;
 				}
-			}
-			else {
+			} else {
 				root->key = next->key;
 				root->data = next->data;
 			}
@@ -294,8 +298,8 @@ void AVLtree<T, S>::removeKey(const T key, bool delete_data) {
 	}
 }
 
-template <class T, class S>
-bool AVLtree<T, S>::findKey (const T key) {
+template<class T, class S>
+bool AVLtree<T, S>::findKey(const T key) {
 	if (root == NULL)
 		return false;
 	else {
@@ -313,8 +317,8 @@ bool AVLtree<T, S>::findKey (const T key) {
 	}
 }
 
-template <class T, class S>
-S* AVLtree<T, S>::getData(const T key){
+template<class T, class S>
+S* AVLtree<T, S>::getData(const T key) {
 	if (!findKey(key) || root == NULL) {
 		return NULL;
 	} else {
@@ -332,8 +336,8 @@ S* AVLtree<T, S>::getData(const T key){
 	return NULL;
 }
 
-template <class T, class S>
-AVLnode<T, S>* AVLtree<T, S>::getNodeByKey(const T key){
+template<class T, class S>
+AVLnode<T, S>* AVLtree<T, S>::getNodeByKey(const T key) {
 	if (!findKey(key) || root == NULL) {
 		return NULL;
 	} else {
@@ -351,7 +355,7 @@ AVLnode<T, S>* AVLtree<T, S>::getNodeByKey(const T key){
 	return NULL;
 }
 
-template <class T, class S>
+template<class T, class S>
 AVLnode<T, S>* AVLtree<T, S>::findMaxKey() {
 	if (root == NULL)
 		return NULL;
@@ -361,8 +365,7 @@ AVLnode<T, S>* AVLtree<T, S>::findMaxKey() {
 	return node;
 }
 
-
-template <class T, class S>
+template<class T, class S>
 void AVLtree<T, S>::inorder(AVLnode<T, S>* node) {
 	if (node == NULL)
 		return;
@@ -371,77 +374,75 @@ void AVLtree<T, S>::inorder(AVLnode<T, S>* node) {
 		if ((getBF(node) == 2) || (getBF(node) == -2)) {
 			std::cout << *node->key << "Problem!!!" << " ";
 			return;
-		}
-		else
+		} else
 			std::cout << *node->key << "(" << getBF(node) << ")" << " ";
 		inorder(node->right);
 	}
 }
 
-template <class T, class S>
-void AVLtree<T, S>::inorderInsert(AVLnode<T, S>* node,
-		AVLnode<T, S>** nodes, int* i) {
+template<class T, class S>
+void AVLtree<T, S>::inorderInsert(AVLnode<T, S>* node, AVLnode<T, S>** nodes,
+		int* i) {
 	if (node == NULL)
 		return;
 	else {
-		inorderInsert(node->left , nodes, i);
+		inorderInsert(node->left, nodes, i);
 		node->key = nodes[*i]->key;
 		node->data = nodes[*i]->data;
 		(*i)++;
-		inorderInsert(node->right , nodes , i);
+		inorderInsert(node->right, nodes, i);
 
 	}
 }
 
-template <class T, class S>
-void AVLtree<T, S>::revinorderInsert(AVLnode<T, S>* node,
-		AVLnode<T, S>** nodes, int* i) {
+template<class T, class S>
+void AVLtree<T, S>::revinorderInsert(AVLnode<T, S>* node, AVLnode<T, S>** nodes,
+		int* i) {
 	if (node == NULL)
 		return;
 	else {
-		revinorderPrint(node->right , nodes , i);
+		revinorderPrint(node->right, nodes, i);
 		node->key = nodes[*i]->key;
 		node->data = nodes[*i]->data;
 		(*i)++;
-		revinorderPrint(node->left , nodes, i);
+		revinorderPrint(node->left, nodes, i);
 	}
 }
 
-template <class T, class S>
-void AVLtree<T, S>::inorderPrint(AVLnode<T, S>* node,
-		AVLnode<T, S>** nodes, int* i) {
+template<class T, class S>
+void AVLtree<T, S>::inorderPrint(AVLnode<T, S>* node, AVLnode<T, S>** nodes,
+		int* i) {
 	if (node == NULL)
 		return;
 	else {
-		inorderPrint(node->left , nodes, i);
+		inorderPrint(node->left, nodes, i);
 		nodes[*i] = node;
 		(*i)++;
-		inorderPrint(node->right , nodes , i);
+		inorderPrint(node->right, nodes, i);
 	}
 }
 
-template <class T, class S>
-void AVLtree<T, S>::revinorderPrint(AVLnode<T, S>* node,
-		AVLnode<T, S>** nodes, int* i) {
+template<class T, class S>
+void AVLtree<T, S>::revinorderPrint(AVLnode<T, S>* node, AVLnode<T, S>** nodes,
+		int* i) {
 	if (node == NULL)
 		return;
 	else {
-		revinorderPrint(node->right , nodes , i);
-		nodes[*i] = node;
+		revinorderPrint(node->right, nodes, i);
+		nodes[(*i)] = node;
 		(*i)++;
-		revinorderPrint(node->left , nodes, i);
+		revinorderPrint(node->left, nodes, i);
 	}
 }
 
-template <class T, class S>
+template<class T, class S>
 void AVLtree<T, S>::treePrint(AVLnode<T, S>* node, int level) {
 	int i;
-	if (node!=NULL)
-	{
+	if (node != NULL) {
 		treePrint(node->right, level + 1);
 		std::cout << std::endl;
 		if (node == root)
-		std::cout << "Root -> ";
+			std::cout << "Root -> ";
 		for (i = 0; i < level && node != root; i++)
 			std::cout << "        ";
 		std::cout << *node->key;
@@ -449,7 +450,80 @@ void AVLtree<T, S>::treePrint(AVLnode<T, S>* node, int level) {
 	}
 }
 
-template <class T, class S>
+template<class T, class S>
+AVLnode<T, S>* AVLtree<T, S>::createEmptyTree(int numOfObjects) {
+	int amount = 1;
+	int power = 1;
+	// find the tree size
+	while (amount < numOfObjects) {
+		power++;
+		amount = pow(2, power) - 1;
+	}
+	AVLnode<T, S>* newTree = new AVLnode<T, S>(NULL, NULL, NULL);
+	newTree->height = power;
+
+	newTree->left = createEmptyTreeHelper((amount - 1) / 2, power - 1, newTree);
+	newTree->right = createEmptyTreeHelper((amount - 1) / 2, power - 1,
+			newTree);
+
+	int numToRemove = newTree->getSize() - numOfObjects;
+	this->removeExtraNodes(&numToRemove, newTree);
+	return newTree;
+}
+
+template<class T, class S>
+AVLnode<T, S>* AVLtree<T, S>::createEmptyTreeHelper(int numOfObjects,
+		int height, AVLnode<T, S> *parent) {
+	if (numOfObjects == 0) {
+		return NULL;
+	}
+	AVLnode<T, S>* node = new AVLnode<T, S>(NULL, NULL, parent);
+	node->height = height;
+	node->left = createEmptyTreeHelper((numOfObjects - 1) / 2, height - 1,
+			node);
+	node->right = createEmptyTreeHelper((numOfObjects - 1) / 2, height - 1,
+			node);
+	return node;
+}
+
+template<class T, class S>
+void AVLtree<T, S>::removeExtraNodes(int *amount, AVLnode<T, S> *node) {
+	if (*amount == 0 || !node) {
+		return;
+	}
+	this->removeExtraNodes(amount, node->right);
+	AVLnode<T, S> *nextNode = node->left;
+	if (!node->right && !node->left) {
+		if (node->parent) {
+			if (node->parent->right == node) {
+				node->parent->right = NULL;
+			} else {
+				node->parent->left = NULL;
+			}
+		}
+		*amount = *amount - 1;
+		delete node;
+	}
+	this->removeExtraNodes(amount, nextNode);
+}
+
+template<class T, class S>
+void AVLtree<T, S>::createAvlFromArray(int numOfObjects,
+		AVLnode<T, S>** array) {
+	int n = 0;
+
+	if (numOfObjects == 0 || array == NULL) {
+		return;
+	}
+
+	AVLnode<T, S>* newTree = this->createEmptyTree(numOfObjects);
+
+	this->inorderInsert(newTree, array, &n);
+
+	this->root = newTree;
+}
+
+template<class T, class S>
 void AVLtree<T, S>::cleanTreeData(AVLnode<T, S>* node) {
 	if (node == NULL)
 		return;
@@ -461,13 +535,18 @@ void AVLtree<T, S>::cleanTreeData(AVLnode<T, S>* node) {
 	}
 }
 
-template <class T, class S>
+template<class T, class S>
 void AVLtree<T, S>::clearTree(AVLnode<T, S>* node) {
 	if (node != NULL) {
 		clearTree(node->left);
 		clearTree(node->right);
-		delete node->key;
-		delete node->data;
+		if(node->key) {
+			delete node->key;
+		}
+
+		if(node->data) {
+			delete node->data;
+		}
 		delete node;
 	}
 }
